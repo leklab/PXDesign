@@ -21,7 +21,7 @@ main_directory = Path(__file__).resolve().parent.parent.parent
 
 inference_configs = {
     "model_name": "pxdesign_v0.1.0",  # inference model selection
-    "seeds": ListValue([], dtype=int),
+    "seeds": ListValue([42], dtype=int),
     "dump_dir": "./output",
     "input_json_path": RequiredValue(str),
     "load_checkpoint_dir": str(main_directory / "release_data/checkpoint"),
