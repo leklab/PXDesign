@@ -24,7 +24,7 @@ from typing import Any, Mapping
 import protenix
 import torch
 from biotite.structure import AtomArray
-from protenix.data.parser import MMCIFParser
+from protenix.data.core.parser import MMCIFParser
 from protenix.utils.distributed import DIST_WRAPPER
 from protenix.utils.file_io import load_gzip_pickle
 from torch.utils.data import DataLoader, Dataset, DistributedSampler

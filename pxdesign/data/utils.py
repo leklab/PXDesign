@@ -26,7 +26,7 @@ import torch
 from biotite.structure import AtomArray, get_residue_starts
 from biotite.structure.io import pdbx
 from biotite.structure.io.pdb import PDBFile
-from protenix.data.ccd import biotite_load_ccd_cif
+from protenix.data.core.ccd import biotite_load_ccd_cif
 from protenix.utils.file_io import load_gzip_pickle
 
 from pxdesign.data.constants import (

@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 from biotite.structure import get_residues
 from protenix.data.constants import PROT_STD_RESIDUES_ONE_TO_THREE
-from protenix.data.parser import MMCIFParser
+from protenix.data.core.parser import MMCIFParser
 
 from pxdesign.data.utils import CIFWriter, pdb_to_cif
 

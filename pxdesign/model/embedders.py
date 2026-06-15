@@ -67,12 +67,48 @@ class InputFeatureEmbedder(nn.Module):
             torch.Tensor: token embedding
                 [..., N_token, 384 (c_token) + 32 + 32 + 1 :=449]
         """
-        # Embed per-atom features.
-        a, _, _, _ = self.atom_attention_encoder(
-            input_feature_dict=input_feature_dict,
+
+        # Extract or dynamically mock Protenix 2.0 language model placeholders
+        device = input_feature_dict["ref_pos"].device
+        dtype = input_feature_dict["ref_pos"].dtype  # Dynamically capture bf16, fp16, or fp32
+        batch_shape = input_feature_dict["ref_pos"].shape[:-2]
+
+        # Pull exact inner-feature dimensions from the layer weights to ensure alignment
+        c_d_in = self.atom_attention_encoder.linear_no_bias_d.weight.shape[1]
+        c_v_in = self.atom_attention_encoder.linear_no_bias_v.weight.shape[1]
+
+        # 1. d_lm fallback: Match the exact expected dimension and active data type
+        d_lm = input_feature_dict.get("d_lm")
+        if d_lm is None:
+            d_lm = torch.zeros((*batch_shape, c_d_in), device=device, dtype=dtype)
+
+        # 2. v_lm fallback: Match the exact expected dimension and active data type
+        v_lm = input_feature_dict.get("v_lm")
+        if v_lm is None:
+            v_lm = torch.zeros((*batch_shape, c_v_in), device=device, dtype=dtype)
+
+        # 3. pad_info fallback: Construct mask utilizing the active data type matching
+        pad_info = input_feature_dict.get("pad_info")
+        if pad_info is None or "mask_trunked" not in pad_info:
+            pad_info = {
+                "mask_trunked": torch.ones((*batch_shape, 1, 1), device=device, dtype=dtype)
+            }
+
+        # Embed per-atom features using Protenix 2.0 signature syntax
+        a, q_l, c_l, p_lm = self.atom_attention_encoder(
+            atom_to_token_idx=input_feature_dict["atom_to_token_idx"],
+            ref_pos=input_feature_dict["ref_pos"],
+            ref_charge=input_feature_dict["ref_charge"],
+            ref_mask=input_feature_dict["ref_mask"],
+            ref_atom_name_chars=input_feature_dict["ref_atom_name_chars"],
+            ref_element=input_feature_dict["ref_element"],
+            d_lm=d_lm,
+            v_lm=v_lm,
+            pad_info=pad_info,
             inplace_safe=inplace_safe,
             chunk_size=chunk_size,
         )  # [..., N_token, c_token]
+
         # Concatenate the per-token features.
         batch_shape = input_feature_dict["restype"].shape[:-1]
         s_inputs = torch.cat(
@@ -85,7 +121,7 @@ class InputFeatureEmbedder(nn.Module):
         )
         if not self.training and a.shape[-2] > 2000:
             torch.cuda.empty_cache()
-        return s_inputs
+        return s_inputs, p_lm, c_l
 
 
 class InputFeatureEmbedderDesign(InputFeatureEmbedder):
@@ -156,9 +192,9 @@ class InputFeatureEmbedderDesign(InputFeatureEmbedder):
                 input_feature_dict["deletion_mean"]
             )
 
-        s_inputs = super().forward(input_feature_dict, inplace_safe, chunk_size)
+        s_inputs, p_lm, c_l = super().forward(input_feature_dict, inplace_safe, chunk_size)
         s_inputs = self.input_map(s_inputs)
-        return s_inputs
+        return s_inputs, p_lm, c_l
 
 
 class ConditionTemplateEmbedder(nn.Module):
@@ -200,14 +236,14 @@ class DesignConditionEmbedder(nn.Module):
         chunk_size: Optional[int] = None,
     ) -> tuple[torch.Tensor, ...]:
 
-        s_inputs = self.input_embedder(
+        s_inputs, p_lm, c_l = self.input_embedder(
             input_feature_dict, inplace_safe=False, chunk_size=chunk_size
         )  # [..., N_token, 449]
         z = self.condition_template_embedder(
             input_feature_dict
         )  # [..., N_token, N_token, c_z]
 
-        return s_inputs, z
+        return s_inputs, z, p_lm, c_l
 
 
 class RelativePositionEncoding(nn.Module):

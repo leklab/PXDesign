@@ -59,12 +59,12 @@ class ProtenixDesign(nn.Module):
         # Design Condition
         # s_inputs: same as protenix, except that 'design tokens' are added
         # z: encodes 'conditional_templ' & 'conditional_templ_mask'
-        s_inputs, z = self.design_condition_embedder(
+        s_inputs, z, p_lm, c_l = self.design_condition_embedder(
             input_feature_dict=input_feature_dict,
             chunk_size=chunk_size,
         )
         s = s_inputs.new_zeros(size=s_inputs.shape[:-1] + (self.configs.c_s,))
-        return s_inputs, s, z
+        return s_inputs, s, z, p_lm, c_l
 
     def sample_diffusion(self, **kwargs) -> torch.Tensor:
         """
@@ -128,7 +128,7 @@ class ProtenixDesign(nn.Module):
         N_token = input_feature_dict["residue_index"].shape[-1]
 
         pred_dict = {}
-        s_inputs, s, z = self.get_condition_embedding(
+        s_inputs, s, z, p_lm, c_l = self.get_condition_embedding(
             input_feature_dict=input_feature_dict,
             chunk_size=chunk_size,
         )
@@ -159,6 +159,7 @@ class ProtenixDesign(nn.Module):
             N_step=N_step, device=s_inputs.device, dtype=s_inputs.dtype
         )
         print(f"Protenix-Design sample diffusion: {self.configs.sample_diffusion}")
+
         pred_dict["coordinate"] = self.sample_diffusion(
             denoise_net=self.diffusion_module,
             input_feature_dict=input_feature_dict,
@@ -168,6 +169,8 @@ class ProtenixDesign(nn.Module):
             N_sample=N_sample,
             noise_schedule=noise_schedule,
             inplace_safe=inplace_safe,
+            p_lm=p_lm,
+            c_l=c_l,
         )
 
         if mode == "inference" and N_token > 2000:

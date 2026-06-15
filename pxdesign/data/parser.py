@@ -29,7 +29,7 @@ import pandas as pd
 from biotite.structure import AtomArray, get_chain_starts, get_residue_starts
 from biotite.structure.io.pdbx import convert as pdbx_convert
 from biotite.structure.molecules import get_molecule_indices
-from protenix.data.filter import Filter
+from protenix.data.core.filter import Filter
 
 from pxdesign.data import ccd
 from pxdesign.data.ccd import get_ccd_ref_info

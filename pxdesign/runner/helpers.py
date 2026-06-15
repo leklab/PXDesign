@@ -648,7 +648,7 @@ def create_target_ptx_json(cif_path, orig_seqs, task_name, dump_dir):
       - Drops the last sequence (binder), so only targets remain.
       - Saves the JSON to <dump_dir>/target_protenix_inputs.json and returns the path.
     """
-    from protenix.data.json_maker import cif_to_input_json
+    from protenix.data.inference.json_maker import cif_to_input_json
     from pxdbench.tools.ptx.ptx_utils import patch_with_orig_seqs
 
     d = cif_to_input_json(cif_path, sample_name=task_name, save_entity_and_asym_id=True)

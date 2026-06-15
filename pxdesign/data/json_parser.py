@@ -16,7 +16,7 @@ import copy
 import logging
 
 import numpy as np
-from protenix.data.json_parser import (
+from protenix.data.inference.json_parser import (
     DNA_1to3,
     PROTEIN_1to3,
     RNA_1to3,
@@ -26,7 +26,7 @@ from protenix.data.json_parser import (
     lig_file_to_atom_info,
     rdkit_mol_to_atom_info,
 )
-from protenix.data.parser import MMCIFParser
+from protenix.data.core.parser import MMCIFParser
 from protenix.utils.file_io import load_gzip_pickle
 
 logger = logging.getLogger(__name__)

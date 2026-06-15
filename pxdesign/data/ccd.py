@@ -17,7 +17,7 @@ import logging
 from pathlib import Path
 from typing import Union
 
-from protenix.data.ccd import (
+from protenix.data.core.ccd import (
     _connect_inter_residue,
     add_inter_residue_bonds,
     biotite_load_ccd_cif,
@@ -26,7 +26,7 @@ from protenix.data.ccd import (
     get_component_rdkit_mol,
     res_names_to_sequence,
 )
-from protenix.data.substructure_perms import get_substructure_perms
+from protenix.data.core.substructure_perms import get_substructure_perms
 
 from pxdesign.configs.configs_data import data_configs
 from pxdesign.data.constants import MOL_TYPE_MAP, STD_DESIGN

@@ -16,7 +16,7 @@ import random
 
 import biotite.structure as struc
 import torch
-from protenix.data import ccd
+from protenix.data.core import ccd
 
 from pxdesign.data.constants import (
     DNA_STD_RESIDUES,

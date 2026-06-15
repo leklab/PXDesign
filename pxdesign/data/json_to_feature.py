@@ -18,7 +18,7 @@ import logging
 import numpy as np
 import torch
 from biotite.structure import AtomArray
-from protenix.data.json_parser import remove_leaving_atoms
+from protenix.data.inference.json_parser import remove_leaving_atoms
 
 from pxdesign.data.featurizer import DesignFeaturizer, Featurizer
 from pxdesign.data.json_parser import add_entity_atom_array

@@ -25,7 +25,7 @@ from typing import Iterable
 import torch
 from ml_collections.config_dict import ConfigDict
 from protenix.config import parse_configs
-from protenix.data.parser import DistillationMMCIFParser
+from protenix.data.core.parser import DistillationMMCIFParser
 from protenix.utils.file_io import dump_gzip_pickle
 from pxdbench.pxd_configs.eval import eval_configs
 

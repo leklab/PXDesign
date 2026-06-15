@@ -147,7 +147,8 @@ class DesignPipeline(InferenceRunner):
                 self.configs.eval.binder.tools.ptx.use_template = True
                 self.configs.eval.binder.tools.ptx.use_msa = False
                 self.configs.eval.binder.tools.ptx.model_name = (
-                    "protenix_mini_tmpl_v0.5.0"
+                    "protenix_base_default_v0.5.0"
+                    #"protenix_mini_tmpl_v0.5.0"
                 )
                 print("[INFO] Use target template in the Protenix filter!")
         else:
@@ -418,7 +419,8 @@ def main(argv=None):
                 runner.configs.eval.binder.tools.ptx.use_template = True
                 runner.configs.eval.binder.tools.ptx.use_msa = False
                 runner.configs.eval.binder.tools.ptx.model_name = (
-                    "protenix_mini_tmpl_v0.5.0"
+                    "protenix_base_default_v0.5.0"
+                    #"protenix_mini_tmpl_v0.5.0"
                 )
                 meta_info["protenix"] = "Protenix-Mini-Templ"
             else:
